@@ -23,8 +23,8 @@
             background: #fff;
             border-radius: 16px;
             width: 100%;
-            max-width: 350px;
-            max-height: 600px;
+            max-width: 800px;
+            max-height: 80vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -43,7 +43,7 @@
         main {
             flex: 1;
             overflow-y: auto;
-            padding: 15px;
+            padding: 20px;
             scroll-behavior: smooth;
         }
         main::-webkit-scrollbar {
@@ -58,43 +58,60 @@
             margin-top: 0;
         }
         p {
-            line-height: 1.4;
+            line-height: 1.6;
+        }
+        .section-content {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .theorist {
+            border-left: 4px solid #ff6f91;
+            padding-left: 15px;
+            margin: 15px 0;
         }
         button {
             background: #ff6f91;
             color: white;
             border: none;
             border-radius: 30px;
-            padding: 12px 18px;
+            padding: 12px 24px;
             font-size: 1rem;
             cursor: pointer;
             margin: 10px auto;
             display: block;
             box-shadow: 0 6px #c74a63;
-            transition: background 0.3s ease;
+            transition: all 0.3s ease;
             user-select: none;
         }
         button:active {
             box-shadow: 0 2px #c74a63;
             transform: translateY(4px);
         }
+        button:disabled {
+            background: #ccc;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
         .quiz-option {
             background: #70e1f5;
             color: #222;
             margin: 8px 0;
-            padding: 12px;
+            padding: 15px;
             border-radius: 14px;
             cursor: pointer;
             font-weight: 600;
             user-select: none;
             box-shadow: 0 4px #43aedf;
-            transition: background-color 0.25s ease;
+            transition: all 0.25s ease;
             width: 100%;
             text-align: left;
         }
-        .quiz-option:hover {
+        .quiz-option:hover:not(.selected):not(:disabled) {
             background: #4bb0d7;
             color: white;
+            transform: translateY(-2px);
         }
         .quiz-option.selected {
             background: #ff6f91;
@@ -105,8 +122,15 @@
         .quiz-feedback {
             text-align: center;
             font-weight: 700;
-            margin-top: 10px;
+            margin: 15px 0;
             color: #ff6f91;
+        }
+        .explanation {
+            background: #f0f7ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #4bb0d7;
         }
         .hide {
             display: none;
@@ -122,18 +146,68 @@
         .phase-indicator {
             background: #ff6f91;
             color: white;
-            padding: 8px;
+            padding: 10px;
             border-radius: 8px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             text-align: center;
             font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .completion-message {
-            text-align: center;
+        .score {
+            background: white;
             color: #ff6f91;
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin: 20px 0;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .tab-button {
+            flex: 1;
+            background: #f0f7ff;
+            color: #4bb0d7;
+            box-shadow: none;
+            border-radius: 8px;
+        }
+        .tab-button.active {
+            background: #4bb0d7;
+            color: white;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #f0f7ff;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #4bb0d7;
+            transition: width 0.3s ease;
+        }
+        @media (max-width: 600px) {
+            #app {
+                max-width: 95%;
+                max-height: 90vh;
+            }
+            .nav-buttons {
+                flex-direction: column;
+            }
+            .nav-buttons button {
+                width: 100%;
+                margin: 5px 0;
+            }
         }
     </style>
 </head>
@@ -143,136 +217,270 @@
             Jogo Behaviorismo
         </header>
         <main id="main-content" tabindex="0">
+            <!-- Intro Section -->
             <section id="intro-section">
-                <h2>Bem-vindo ao Behaviorismo!</h2>
-                <p>Antes de começarmos, vamos conhecer os principais conceitos:</p>
-                <div class="concepts">
-                    <p><strong>Behaviorismo:</strong> É uma abordagem da psicologia que estuda o comportamento observável, focando na relação entre estímulos e respostas.</p>
-                    <p><strong>Principais Teóricos:</strong></p>
-                    <ul>
-                        <li><strong>John B. Watson:</strong> Pai do behaviorismo clássico</li>
-                        <li><strong>Ivan Pavlov:</strong> Conhecido pelo condicionamento clássico</li>
-                        <li><strong>B.F. Skinner:</strong> Desenvolveu o condicionamento operante</li>
-                        <li><strong>Edward Thorndike:</strong> Criador da lei do efeito</li>
-                    </ul>
+                <h2>Bem-vindo ao Estudo do Behaviorismo!</h2>
+                <div class="tab-buttons">
+                    <button class="tab-button active" data-tab="overview">Visão Geral</button>
+                    <button class="tab-button" data-tab="concepts">Conceitos</button>
+                    <button class="tab-button" data-tab="theorists">Teóricos</button>
                 </div>
-                <button id="start-btn" aria-label="Começar jogo">Começar</button>
+
+                <div id="overview" class="section-content">
+                    <p>Este é um jogo educacional sobre o Behaviorismo, uma das principais abordagens da psicologia. O jogo está dividido em três fases de dificuldade crescente:</p>
+                    <ul>
+                        <li><strong>Fase 1 (Fácil):</strong> Conceitos básicos do Behaviorismo</li>
+                        <li><strong>Fase 2 (Média):</strong> Teorias específicas e aplicações</li>
+                        <li><strong>Fase 3 (Difícil):</strong> Análises críticas e comparativas</li>
+                    </ul>
+                    <p>Para avançar, você precisa acertar pelo menos 60% das questões de cada fase.</p>
+                </div>
+
+                <div id="concepts" class="section-content hide">
+                    <h3>Conceitos Fundamentais</h3>
+                    <div class="theorist">
+                        <h4>Condicionamento Clássico</h4>
+                        <p>Processo de aprendizagem onde um estímulo neutro é pareado com um estímulo incondicionado para produzir uma resposta condicionada.</p>
+                    </div>
+                    <div class="theorist">
+                        <h4>Condicionamento Operante</h4>
+                        <p>Processo de aprendizagem baseado nas consequências do comportamento, envolvendo reforço e punição.</p>
+                    </div>
+                </div>
+
+                <div id="theorists" class="section-content hide">
+                    <div class="theorist">
+                        <h4>Ivan Pavlov (1849-1936)</h4>
+                        <p>Descobriu o condicionamento clássico através de experimentos com cães.</p>
+                    </div>
+                    <div class="theorist">
+                        <h4>John B. Watson (1878-1958)</h4>
+                        <p>Fundador do behaviorismo, defendeu o estudo do comportamento observável.</p>
+                    </div>
+                    <div class="theorist">
+                        <h4>B.F. Skinner (1904-1990)</h4>
+                        <p>Desenvolveu o condicionamento operante e a caixa de Skinner.</p>
+                    </div>
+                </div>
+
+                <div class="nav-buttons" style="margin: 20px auto; text-align: center;">
+                    <button id="start-btn" style="display: inline-block; margin: 10px;">Iniciar Jogo</button>
+                    <button id="review-btn" style="display: inline-block; margin: 10px;">Modo Revisão</button>
+                </div>
             </section>
 
-            <section id="quiz-section" class="hide" aria-live="polite">
-                <div id="phase-indicator" class="phase-indicator"></div>
+            <!-- Quiz Section -->
+            <section id="quiz-section" class="hide">
+                <div class="phase-indicator">
+                    <span id="phase-name"></span>
+                    <span class="score">Pontuação: <span id="current-score">0</span></span>
+                </div>
                 <div id="question-container"></div>
-                <p id="quiz-feedback" class="quiz-feedback" aria-live="assertive"></p>
-                <button id="next-btn" class="hide" aria-label="Próxima pergunta">Próxima</button>
+                <div id="explanation" class="explanation hide"></div>
+                <p id="quiz-feedback" class="quiz-feedback"></p>
+                <button id="next-btn" class="hide">Próxima</button>
             </section>
 
-            <section id="phase-complete" class="hide" aria-live="polite">
-                <div class="completion-message" id="completion-message"></div>
-                <button id="continue-btn" aria-label="Continuar para próxima fase">Continuar</button>
+            <!-- Phase Complete Section -->
+            <section id="phase-complete" class="hide">
+                <h2>Fase Concluída!</h2>
+                <div id="phase-stats"></div>
+                <div id="completion-message"></div>
+                <button id="retry-btn" class="hide">Tentar Novamente</button>
+                <button id="continue-btn">Continuar</button>
             </section>
 
-            <section id="final-section" class="hide" aria-live="polite">
+            <!-- Final Section -->
+            <section id="final-section" class="hide">
                 <h2>Parabéns!</h2>
-                <p>Você completou todas as fases do jogo!</p>
-                <button id="restart-btn" aria-label="Reiniciar jogo">Jogar Novamente</button>
+                <div id="final-stats"></div>
+                <div class="nav-buttons">
+                    <button id="challenge-btn">Modo Desafio</button>
+                    <button id="restart-btn">Jogar Novamente</button>
+                </div>
             </section>
         </main>
-        <div id="footer" aria-hidden="true">
+        <div id="footer">
             Desenvolvido para aulas de psicologia por BLACKBOXAI
         </div>
     </div>
 
     <script>
-        (() => {
-            // Quiz questions organized by phase
+        document.addEventListener('DOMContentLoaded', () => {
+            // Quiz data
             const quizPhases = [
                 {
-                    name: "Fase 1 - Fácil",
+                    name: "Fase 1 - Conceitos Básicos",
                     questions: [
                         {
                             question: "Quem é considerado o pai do behaviorismo?",
                             options: ["John B. Watson", "Ivan Pavlov", "B.F. Skinner", "Edward Thorndike"],
-                            answer: 0
+                            answer: 0,
+                            explanation: "John B. Watson é considerado o pai do behaviorismo por ter fundado esta escola de psicologia em 1913. Ele defendia que a psicologia deveria focar apenas no comportamento observável."
                         },
                         {
-                            question: "O behaviorismo estuda principalmente:",
-                            options: ["Comportamento observável", "Pensamentos inconscientes", "Emoções internas", "Sonhos"],
-                            answer: 0
+                            question: "O que é o behaviorismo?",
+                            options: [
+                                "Estudo do comportamento observável",
+                                "Análise dos pensamentos",
+                                "Estudo das emoções",
+                                "Interpretação dos sonhos"
+                            ],
+                            answer: 0,
+                            explanation: "O behaviorismo é uma abordagem da psicologia que foca exclusivamente no estudo do comportamento observável, rejeitando a análise de processos mentais internos."
                         },
                         {
-                            question: "Qual experimento famoso foi realizado por Pavlov?",
-                            options: ["Condicionamento com cães", "Labirinto com ratos", "Experimento com pombos", "Teste com macacos"],
-                            answer: 0
+                            question: "Qual é o principal foco do behaviorismo?",
+                            options: [
+                                "Relação entre estímulo e resposta",
+                                "Análise do inconsciente",
+                                "Estudo dos sonhos",
+                                "Processos cognitivos"
+                            ],
+                            answer: 0,
+                            explanation: "O behaviorismo foca na relação entre estímulos ambientais e as respostas comportamentais que eles provocam."
                         },
                         {
                             question: "O que é um estímulo no behaviorismo?",
-                            options: ["Algo que provoca uma resposta", "Um pensamento interno", "Uma emoção", "Um sonho"],
-                            answer: 0
+                            options: [
+                                "Qualquer evento que influencia o comportamento",
+                                "Apenas recompensas",
+                                "Somente punições",
+                                "Pensamentos internos"
+                            ],
+                            answer: 0,
+                            explanation: "No behaviorismo, um estímulo é qualquer evento ambiental que pode influenciar o comportamento, seja ele positivo ou negativo."
                         },
                         {
-                            question: "O behaviorismo foca em:",
-                            options: ["Comportamentos externos", "Sentimentos internos", "Interpretação de sonhos", "Análise do inconsciente"],
-                            answer: 0
+                            question: "Como o behaviorismo vê o aprendizado?",
+                            options: [
+                                "Como mudança no comportamento observável",
+                                "Como processo mental interno",
+                                "Como desenvolvimento emocional",
+                                "Como insight espiritual"
+                            ],
+                            answer: 0,
+                            explanation: "Para o behaviorismo, o aprendizado é definido como uma mudança relativamente permanente no comportamento observável, resultante da experiência."
                         }
                     ]
                 },
                 {
-                    name: "Fase 2 - Média",
+                    name: "Fase 2 - Teorias e Aplicações",
                     questions: [
                         {
                             question: "O que é condicionamento clássico?",
-                            options: ["Associação entre estímulos", "Punição de comportamentos", "Recompensa por ações", "Análise de pensamentos"],
-                            answer: 0
+                            options: [
+                                "Associação entre estímulos neutros e incondicionados",
+                                "Reforço de comportamentos",
+                                "Punição de ações",
+                                "Extinção de respostas"
+                            ],
+                            answer: 0,
+                            explanation: "O condicionamento clássico, descoberto por Pavlov, é um processo onde um estímulo neutro se torna condicionado ao ser pareado com um estímulo incondicionado."
                         },
                         {
-                            question: "Quem desenvolveu o conceito de condicionamento operante?",
-                            options: ["B.F. Skinner", "Ivan Pavlov", "John Watson", "Edward Thorndike"],
-                            answer: 0
+                            question: "Como funciona o reforço positivo?",
+                            options: [
+                                "Adicionando algo agradável após o comportamento",
+                                "Removendo algo desagradável",
+                                "Adicionando punição",
+                                "Removendo recompensa"
+                            ],
+                            answer: 0,
+                            explanation: "O reforço positivo ocorre quando um estímulo agradável é adicionado após um comportamento, aumentando a probabilidade de sua repetição."
                         },
                         {
-                            question: "O que é reforço positivo?",
-                            options: ["Adicionar algo agradável", "Remover algo desagradável", "Adicionar punição", "Ignorar comportamento"],
-                            answer: 0
+                            question: "O que caracteriza o condicionamento operante?",
+                            options: [
+                                "Foco nas consequências do comportamento",
+                                "Associação automática de estímulos",
+                                "Apenas uso de punições",
+                                "Ignorar o ambiente"
+                            ],
+                            answer: 0,
+                            explanation: "O condicionamento operante, desenvolvido por Skinner, foca em como as consequências de um comportamento afetam sua probabilidade de ocorrência futura."
                         },
                         {
-                            question: "A Lei do Efeito foi proposta por:",
-                            options: ["Edward Thorndike", "B.F. Skinner", "Ivan Pavlov", "John Watson"],
-                            answer: 0
+                            question: "Como funciona a extinção?",
+                            options: [
+                                "Remoção do reforço leva à diminuição do comportamento",
+                                "Aumento da punição",
+                                "Adição de novos estímulos",
+                                "Reforço contínuo"
+                            ],
+                            answer: 0,
+                            explanation: "A extinção ocorre quando um comportamento previamente reforçado não é mais reforçado, levando à sua diminuição gradual."
                         },
                         {
-                            question: "O que é extinção no behaviorismo?",
-                            options: ["Fim de uma resposta", "Início de um comportamento", "Punição severa", "Recompensa contínua"],
-                            answer: 0
+                            question: "O que é discriminação de estímulos?",
+                            options: [
+                                "Responder diferentemente a estímulos diferentes",
+                                "Responder igual a todos estímulos",
+                                "Ignorar todos estímulos",
+                                "Reforçar todos comportamentos"
+                            ],
+                            answer: 0,
+                            explanation: "Discriminação de estímulos é a capacidade de responder de forma diferente a estímulos diferentes, uma habilidade importante na aprendizagem."
                         }
                     ]
                 },
                 {
-                    name: "Fase 3 - Difícil",
+                    name: "Fase 3 - Análise Crítica",
                     questions: [
                         {
-                            question: "Como o condicionamento operante difere do clássico?",
-                            options: ["Foca nas consequências", "Usa apenas estímulos", "Ignora o ambiente", "Não usa reforço"],
-                            answer: 0
+                            question: "Qual é a principal crítica ao behaviorismo?",
+                            options: [
+                                "Negligência dos processos mentais",
+                                "Excesso de subjetividade",
+                                "Foco excessivo em emoções",
+                                "Desconsideração do ambiente"
+                            ],
+                            answer: 0,
+                            explanation: "A principal crítica ao behaviorismo é sua negligência dos processos mentais e da consciência, considerando apenas o comportamento observável."
                         },
                         {
-                            question: "O que é generalização de estímulos?",
-                            options: ["Responder a estímulos similares", "Ignorar todos estímulos", "Punir comportamentos", "Reforçar ações"],
-                            answer: 0
+                            question: "Como o behaviorismo influenciou a educação?",
+                            options: [
+                                "Através de técnicas de modificação comportamental",
+                                "Ignorando o papel do professor",
+                                "Focando apenas em punições",
+                                "Eliminando recompensas"
+                            ],
+                            answer: 0,
+                            explanation: "O behaviorismo influenciou a educação através do desenvolvimento de técnicas de modificação comportamental e sistemas de recompensa."
                         },
                         {
-                            question: "Qual o papel do reforço intermitente?",
-                            options: ["Fortalecer comportamentos", "Extinguir respostas", "Punir ações", "Ignorar estímulos"],
-                            answer: 0
+                            question: "Qual a relação entre behaviorismo e terapia cognitivo-comportamental?",
+                            options: [
+                                "O behaviorismo forneceu bases importantes",
+                                "São completamente opostos",
+                                "Não há relação",
+                                "O behaviorismo rejeitou a TCC"
+                            ],
+                            answer: 0,
+                            explanation: "O behaviorismo forneceu importantes fundamentos para a TCC, especialmente em termos de técnicas de modificação comportamental."
                         },
                         {
-                            question: "O que é discriminação de estímulos?",
-                            options: ["Diferenciar estímulos", "Generalizar respostas", "Ignorar reforços", "Punir sempre"],
-                            answer: 0
+                            question: "Como o behaviorismo contribuiu para a psicologia experimental?",
+                            options: [
+                                "Estabeleceu métodos objetivos de pesquisa",
+                                "Focou apenas em teoria",
+                                "Rejeitou a experimentação",
+                                "Priorizou métodos subjetivos"
+                            ],
+                            answer: 0,
+                            explanation: "O behaviorismo estabeleceu métodos objetivos e rigorosos de pesquisa experimental em psicologia."
                         },
                         {
-                            question: "Como funciona a modelagem comportamental?",
-                            options: ["Reforço gradual", "Punição imediata", "Extinção rápida", "Generalização total"],
-                            answer: 0
+                            question: "Qual é a relevância atual do behaviorismo?",
+                            options: [
+                                "Continua influente em várias áreas",
+                                "Totalmente obsoleto",
+                                "Relevante apenas historicamente",
+                                "Sem aplicação prática"
+                            ],
+                            answer: 0,
+                            explanation: "O behaviorismo continua relevante em várias áreas, como educação, terapia comportamental e modificação de comportamento."
                         }
                     ]
                 }
@@ -282,90 +490,114 @@
             let currentPhase = 0;
             let currentQuestion = 0;
             let score = 0;
+            let phaseScores = [0, 0, 0];
 
             // DOM Elements
-            const introSection = document.getElementById('intro-section');
-            const quizSection = document.getElementById('quiz-section');
-            const phaseComplete = document.getElementById('phase-complete');
-            const finalSection = document.getElementById('final-section');
-            const phaseIndicator = document.getElementById('phase-indicator');
-            const questionContainer = document.getElementById('question-container');
-            const quizFeedback = document.getElementById('quiz-feedback');
-            const nextBtn = document.getElementById('next-btn');
-            const completionMessage = document.getElementById('completion-message');
+            const sections = {
+                intro: document.getElementById('intro-section'),
+                quiz: document.getElementById('quiz-section'),
+                phaseComplete: document.getElementById('phase-complete'),
+                final: document.getElementById('final-section')
+            };
 
-            // Start button event
-            document.getElementById('start-btn').addEventListener('click', startQuiz);
+            // Initialize event listeners
+            function initializeEventListeners() {
+                // Tab navigation
+                document.querySelectorAll('.tab-button').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const tabId = button.getAttribute('data-tab');
+                        showTab(tabId);
+                    });
+                });
 
-            // Next button event
-            nextBtn.addEventListener('click', nextQuestion);
+                // Game buttons
+                document.getElementById('start-btn').addEventListener('click', startQuiz);
+                document.getElementById('review-btn').addEventListener('click', startReview);
+                document.getElementById('next-btn').addEventListener('click', nextQuestion);
+                document.getElementById('continue-btn').addEventListener('click', nextPhase);
+                document.getElementById('retry-btn').addEventListener('click', retryPhase);
+                document.getElementById('restart-btn').addEventListener('click', restartGame);
+            }
 
-            // Continue button event
-            document.getElementById('continue-btn').addEventListener('click', nextPhase);
+            // Start review mode
+            function startReview() {
+                showSection('intro-section');
+                // Optionally, reset tabs to overview
+                showTab('overview');
+            }
 
-            // Restart button event
-            document.getElementById('restart-btn').addEventListener('click', () => {
+            // Show specific tab
+            function showTab(tabId) {
+                document.querySelectorAll('.section-content').forEach(content => {
+                    content.classList.add('hide');
+                });
+                document.getElementById(tabId).classList.remove('hide');
+
+                document.querySelectorAll('.tab-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+            }
+
+            // Game functions
+            function startQuiz() {
                 currentPhase = 0;
                 currentQuestion = 0;
                 score = 0;
-                showSection(introSection);
-            });
-
-            function startQuiz() {
-                showSection(quizSection);
+                phaseScores = [0, 0, 0];
+                showSection('quiz-section');
                 showQuestion();
             }
 
-            function showSection(section) {
-                [introSection, quizSection, phaseComplete, finalSection].forEach(s => {
-                    s.classList.add('hide');
+            function showSection(sectionId) {
+                Object.values(sections).forEach(section => {
+                    section.classList.add('hide');
                 });
-                section.classList.remove('hide');
+                document.getElementById(sectionId).classList.remove('hide');
             }
 
             function showQuestion() {
                 const phase = quizPhases[currentPhase];
-                phaseIndicator.textContent = phase.name;
+                document.getElementById('phase-name').textContent = phase.name;
                 const question = phase.questions[currentQuestion];
 
-                questionContainer.innerHTML = `
-                    <p><strong>Pergunta ${currentQuestion + 1} de 5:</strong> ${question.question}</p>
-                    <div id="options-container"></div>
+                document.getElementById('question-container').innerHTML = `
+                    <p><strong>Pergunta ${currentQuestion + 1} de ${phase.questions.length}:</strong> ${question.question}</p>
+                    <div id="options-container">
+                        ${question.options.map((option, index) => `
+                            <button class="quiz-option" onclick="selectAnswer(${index})">${option}</button>
+                        `).join('')}
+                    </div>
                 `;
 
-                const optionsContainer = document.getElementById('options-container');
-                question.options.forEach((option, index) => {
-                    const button = document.createElement('button');
-                    button.className = 'quiz-option';
-                    button.textContent = option;
-                    button.addEventListener('click', () => selectAnswer(index));
-                    optionsContainer.appendChild(button);
-                });
-
-                nextBtn.classList.add('hide');
-                quizFeedback.textContent = '';
+                document.getElementById('next-btn').classList.add('hide');
+                document.getElementById('quiz-feedback').textContent = '';
+                document.getElementById('explanation').classList.add('hide');
             }
 
-            function selectAnswer(selectedIndex) {
+            // Make selectAnswer available globally
+            window.selectAnswer = function(selectedIndex) {
                 const question = quizPhases[currentPhase].questions[currentQuestion];
                 const options = document.querySelectorAll('.quiz-option');
 
                 options.forEach(option => {
                     option.disabled = true;
-                    option.style.cursor = 'default';
                 });
 
-                options[selectedIndex].classList.add('selected');
-
                 if (selectedIndex === question.answer) {
-                    quizFeedback.textContent = "Correto! 🎉";
+                    document.getElementById('quiz-feedback').textContent = "Correto! 🎉";
                     score++;
+                    phaseScores[currentPhase]++;
                 } else {
-                    quizFeedback.textContent = `Incorreto. A resposta certa era: ${question.options[question.answer]}`;
+                    document.getElementById('quiz-feedback').textContent = 
+                        `Incorreto. A resposta certa era: ${question.options[question.answer]}`;
                 }
 
-                nextBtn.classList.remove('hide');
-            }
+                document.getElementById('current-score').textContent = score;
+                document.getElementById('explanation').textContent = question.explanation;
+                document.getElementById('explanation').classList.remove('hide');
+                document.getElementById('next-btn').classList.remove('hide');
+            };
 
             function nextQuestion() {
                 currentQuestion++;
@@ -378,25 +610,79 @@
             }
 
             function completePhase() {
-                showSection(phaseComplete);
-                completionMessage.textContent = `Parabéns, você concluiu a ${quizPhases[currentPhase].name}!`;
+                showSection('phase-complete');
+                const totalQuestions = quizPhases[currentPhase].questions.length;
+                const phaseScore = phaseScores[currentPhase];
+                const percentage = (phaseScore / totalQuestions) * 100;
+
+                document.getElementById('phase-stats').innerHTML = `
+                    <p>Fase ${currentPhase + 1} completada!</p>
+                    <p>Acertos: ${phaseScore} de ${totalQuestions}</p>
+                    <p>Porcentagem: ${percentage.toFixed(1)}%</p>
+                `;
+
+                if (percentage >= 60) {
+                    document.getElementById('completion-message').textContent = 
+                        "Parabéns! Você atingiu a pontuação necessária para avançar!";
+                    document.getElementById('retry-btn').classList.add('hide');
+                    document.getElementById('continue-btn').classList.remove('hide');
+                } else {
+                    document.getElementById('completion-message').textContent = 
+                        "Não foi dessa vez. Estude mais e tente novamente.";
+                    document.getElementById('retry-btn').classList.remove('hide');
+                    document.getElementById('continue-btn').classList.add('hide');
+                }
             }
 
             function nextPhase() {
-                currentQuestion = 0;
                 currentPhase++;
-
                 if (currentPhase >= quizPhases.length) {
-                    showSection(finalSection);
+                    showFinalResults();
                 } else {
-                    showSection(quizSection);
+                    currentQuestion = 0;
+                    showSection('quiz-section');
                     showQuestion();
                 }
             }
 
-            // Initialize with intro section
-            showSection(introSection);
-        })();
+            function retryPhase() {
+                currentQuestion = 0;
+                phaseScores[currentPhase] = 0;
+                showSection('quiz-section');
+                showQuestion();
+            }
+
+            function showFinalResults() {
+                showSection('final-section');
+                const totalQuestions = quizPhases.reduce((sum, phase) => sum + phase.questions.length, 0);
+                const totalScore = phaseScores.reduce((sum, score) => sum + score, 0);
+                const finalPercentage = (totalScore / totalQuestions) * 100;
+
+                document.getElementById('final-stats').innerHTML = `
+                    <p>Pontuação Total: ${totalScore} de ${totalQuestions}</p>
+                    <p>Porcentagem Final: ${finalPercentage.toFixed(1)}%</p>
+                    <p>Desempenho por fase:</p>
+                    <ul>
+                        ${quizPhases.map((phase, index) => `
+                            <li>${phase.name}: ${phaseScores[index]} de ${phase.questions.length} 
+                            (${((phaseScores[index] / phase.questions.length) * 100).toFixed(1)}%)</li>
+                        `).join('')}
+                    </ul>
+                `;
+            }
+
+            function restartGame() {
+                currentPhase = 0;
+                currentQuestion = 0;
+                score = 0;
+                phaseScores = [0, 0, 0];
+                showSection('intro-section');
+            }
+
+            // Initialize the game
+            initializeEventListeners();
+            showTab('overview');
+        });
     </script>
 </body>
 </html>
