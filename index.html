@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>Jogo Behaviorismo - Psicologias</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffd194, #70e1f5);
+            color: #222;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+        #app {
+            background: #fff;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 350px;
+            max-height: 600px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+        }
+        header {
+            background: #ff6f91;
+            color: #fff;
+            padding: 15px;
+            border-radius: 16px 16px 0 0;
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+        }
+        main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            scroll-behavior: smooth;
+        }
+        main::-webkit-scrollbar {
+            width: 6px;
+        }
+        main::-webkit-scrollbar-thumb {
+            background-color: #ff6f91;
+            border-radius: 3px;
+        }
+        h2 {
+            color: #ff6f91;
+            margin-top: 0;
+        }
+        p {
+            line-height: 1.4;
+        }
+        button {
+            background: #ff6f91;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 12px 18px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 10px auto;
+            display: block;
+            box-shadow: 0 6px #c74a63;
+            transition: background 0.3s ease;
+            user-select: none;
+        }
+        button:active {
+            box-shadow: 0 2px #c74a63;
+            transform: translateY(4px);
+        }
+        .quiz-option {
+            background: #70e1f5;
+            color: #222;
+            margin: 8px 0;
+            padding: 12px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 600;
+            user-select: none;
+            box-shadow: 0 4px #43aedf;
+            transition: background-color 0.25s ease;
+            width: 100%;
+            text-align: left;
+        }
+        .quiz-option:hover {
+            background: #4bb0d7;
+            color: white;
+        }
+        .quiz-option.selected {
+            background: #ff6f91;
+            color: white;
+            box-shadow: none;
+            cursor: default;
+        }
+        .quiz-feedback {
+            text-align: center;
+            font-weight: 700;
+            margin-top: 10px;
+            color: #ff6f91;
+        }
+        .hide {
+            display: none;
+        }
+        #footer {
+            background: #ffe7e9;
+            padding: 12px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #888;
+            border-radius: 0 0 16px 16px;
+        }
+        .phase-indicator {
+            background: #ff6f91;
+            color: white;
+            padding: 8px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .completion-message {
+            text-align: center;
+            color: #ff6f91;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" role="main" aria-label="Jogo Behaviorismo">
+        <header>
+            Jogo Behaviorismo
+        </header>
+        <main id="main-content" tabindex="0">
+            <section id="intro-section">
+                <h2>Bem-vindo ao Behaviorismo!</h2>
+                <p>Antes de começarmos, vamos conhecer os principais conceitos:</p>
+                <div class="concepts">
+                    <p><strong>Behaviorismo:</strong> É uma abordagem da psicologia que estuda o comportamento observável, focando na relação entre estímulos e respostas.</p>
+                    <p><strong>Principais Teóricos:</strong></p>
+                    <ul>
+                        <li><strong>John B. Watson:</strong> Pai do behaviorismo clássico</li>
+                        <li><strong>Ivan Pavlov:</strong> Conhecido pelo condicionamento clássico</li>
+                        <li><strong>B.F. Skinner:</strong> Desenvolveu o condicionamento operante</li>
+                        <li><strong>Edward Thorndike:</strong> Criador da lei do efeito</li>
+                    </ul>
+                </div>
+                <button id="start-btn" aria-label="Começar jogo">Começar</button>
+            </section>
+
+            <section id="quiz-section" class="hide" aria-live="polite">
+                <div id="phase-indicator" class="phase-indicator"></div>
+                <div id="question-container"></div>
+                <p id="quiz-feedback" class="quiz-feedback" aria-live="assertive"></p>
+                <button id="next-btn" class="hide" aria-label="Próxima pergunta">Próxima</button>
+            </section>
+
+            <section id="phase-complete" class="hide" aria-live="polite">
+                <div class="completion-message" id="completion-message"></div>
+                <button id="continue-btn" aria-label="Continuar para próxima fase">Continuar</button>
+            </section>
+
+            <section id="final-section" class="hide" aria-live="polite">
+                <h2>Parabéns!</h2>
+                <p>Você completou todas as fases do jogo!</p>
+                <button id="restart-btn" aria-label="Reiniciar jogo">Jogar Novamente</button>
+            </section>
+        </main>
+        <div id="footer" aria-hidden="true">
+            Desenvolvido para aulas de psicologia por BLACKBOXAI
+        </div>
+    </div>
+
+    <script>
+        (() => {
+            // Quiz questions organized by phase
+            const quizPhases = [
+                {
+                    name: "Fase 1 - Fácil",
+                    questions: [
+                        {
+                            question: "Quem é considerado o pai do behaviorismo?",
+                            options: ["John B. Watson", "Ivan Pavlov", "B.F. Skinner", "Edward Thorndike"],
+                            answer: 0
+                        },
+                        {
+                            question: "O behaviorismo estuda principalmente:",
+                            options: ["Comportamento observável", "Pensamentos inconscientes", "Emoções internas", "Sonhos"],
+                            answer: 0
+                        },
+                        {
+                            question: "Qual experimento famoso foi realizado por Pavlov?",
+                            options: ["Condicionamento com cães", "Labirinto com ratos", "Experimento com pombos", "Teste com macacos"],
+                            answer: 0
+                        },
+                        {
+                            question: "O que é um estímulo no behaviorismo?",
+                            options: ["Algo que provoca uma resposta", "Um pensamento interno", "Uma emoção", "Um sonho"],
+                            answer: 0
+                        },
+                        {
+                            question: "O behaviorismo foca em:",
+                            options: ["Comportamentos externos", "Sentimentos internos", "Interpretação de sonhos", "Análise do inconsciente"],
+                            answer: 0
+                        }
+                    ]
+                },
+                {
+                    name: "Fase 2 - Média",
+                    questions: [
+                        {
+                            question: "O que é condicionamento clássico?",
+                            options: ["Associação entre estímulos", "Punição de comportamentos", "Recompensa por ações", "Análise de pensamentos"],
+                            answer: 0
+                        },
+                        {
+                            question: "Quem desenvolveu o conceito de condicionamento operante?",
+                            options: ["B.F. Skinner", "Ivan Pavlov", "John Watson", "Edward Thorndike"],
+                            answer: 0
+                        },
+                        {
+                            question: "O que é reforço positivo?",
+                            options: ["Adicionar algo agradável", "Remover algo desagradável", "Adicionar punição", "Ignorar comportamento"],
+                            answer: 0
+                        },
+                        {
+                            question: "A Lei do Efeito foi proposta por:",
+                            options: ["Edward Thorndike", "B.F. Skinner", "Ivan Pavlov", "John Watson"],
+                            answer: 0
+                        },
+                        {
+                            question: "O que é extinção no behaviorismo?",
+                            options: ["Fim de uma resposta", "Início de um comportamento", "Punição severa", "Recompensa contínua"],
+                            answer: 0
+                        }
+                    ]
+                },
+                {
+                    name: "Fase 3 - Difícil",
+                    questions: [
+                        {
+                            question: "Como o condicionamento operante difere do clássico?",
+                            options: ["Foca nas consequências", "Usa apenas estímulos", "Ignora o ambiente", "Não usa reforço"],
+                            answer: 0
+                        },
+                        {
+                            question: "O que é generalização de estímulos?",
+                            options: ["Responder a estímulos similares", "Ignorar todos estímulos", "Punir comportamentos", "Reforçar ações"],
+                            answer: 0
+                        },
+                        {
+                            question: "Qual o papel do reforço intermitente?",
+                            options: ["Fortalecer comportamentos", "Extinguir respostas", "Punir ações", "Ignorar estímulos"],
+                            answer: 0
+                        },
+                        {
+                            question: "O que é discriminação de estímulos?",
+                            options: ["Diferenciar estímulos", "Generalizar respostas", "Ignorar reforços", "Punir sempre"],
+                            answer: 0
+                        },
+                        {
+                            question: "Como funciona a modelagem comportamental?",
+                            options: ["Reforço gradual", "Punição imediata", "Extinção rápida", "Generalização total"],
+                            answer: 0
+                        }
+                    ]
+                }
+            ];
+
+            // Game state
+            let currentPhase = 0;
+            let currentQuestion = 0;
+            let score = 0;
+
+            // DOM Elements
+            const introSection = document.getElementById('intro-section');
+            const quizSection = document.getElementById('quiz-section');
+            const phaseComplete = document.getElementById('phase-complete');
+            const finalSection = document.getElementById('final-section');
+            const phaseIndicator = document.getElementById('phase-indicator');
+            const questionContainer = document.getElementById('question-container');
+            const quizFeedback = document.getElementById('quiz-feedback');
+            const nextBtn = document.getElementById('next-btn');
+            const completionMessage = document.getElementById('completion-message');
+
+            // Start button event
+            document.getElementById('start-btn').addEventListener('click', startQuiz);
+
+            // Next button event
+            nextBtn.addEventListener('click', nextQuestion);
+
+            // Continue button event
+            document.getElementById('continue-btn').addEventListener('click', nextPhase);
+
+            // Restart button event
+            document.getElementById('restart-btn').addEventListener('click', () => {
+                currentPhase = 0;
+                currentQuestion = 0;
+                score = 0;
+                showSection(introSection);
+            });
+
+            function startQuiz() {
+                showSection(quizSection);
+                showQuestion();
+            }
+
+            function showSection(section) {
+                [introSection, quizSection, phaseComplete, finalSection].forEach(s => {
+                    s.classList.add('hide');
+                });
+                section.classList.remove('hide');
+            }
+
+            function showQuestion() {
+                const phase = quizPhases[currentPhase];
+                phaseIndicator.textContent = phase.name;
+                const question = phase.questions[currentQuestion];
+
+                questionContainer.innerHTML = `
+                    <p><strong>Pergunta ${currentQuestion + 1} de 5:</strong> ${question.question}</p>
+                    <div id="options-container"></div>
+                `;
+
+                const optionsContainer = document.getElementById('options-container');
+                question.options.forEach((option, index) => {
+                    const button = document.createElement('button');
+                    button.className = 'quiz-option';
+                    button.textContent = option;
+                    button.addEventListener('click', () => selectAnswer(index));
+                    optionsContainer.appendChild(button);
+                });
+
+                nextBtn.classList.add('hide');
+                quizFeedback.textContent = '';
+            }
+
+            function selectAnswer(selectedIndex) {
+                const question = quizPhases[currentPhase].questions[currentQuestion];
+                const options = document.querySelectorAll('.quiz-option');
+
+                options.forEach(option => {
+                    option.disabled = true;
+                    option.style.cursor = 'default';
+                });
+
+                options[selectedIndex].classList.add('selected');
+
+                if (selectedIndex === question.answer) {
+                    quizFeedback.textContent = "Correto! 🎉";
+                    score++;
+                } else {
+                    quizFeedback.textContent = `Incorreto. A resposta certa era: ${question.options[question.answer]}`;
+                }
+
+                nextBtn.classList.remove('hide');
+            }
+
+            function nextQuestion() {
+                currentQuestion++;
+                
+                if (currentQuestion >= quizPhases[currentPhase].questions.length) {
+                    completePhase();
+                } else {
+                    showQuestion();
+                }
+            }
+
+            function completePhase() {
+                showSection(phaseComplete);
+                completionMessage.textContent = `Parabéns, você concluiu a ${quizPhases[currentPhase].name}!`;
+            }
+
+            function nextPhase() {
+                currentQuestion = 0;
+                currentPhase++;
+
+                if (currentPhase >= quizPhases.length) {
+                    showSection(finalSection);
+                } else {
+                    showSection(quizSection);
+                    showQuestion();
+                }
+            }
+
+            // Initialize with intro section
+            showSection(introSection);
+        })();
+    </script>
+</body>
+</html>
